@@ -1,0 +1,2 @@
+const VESSEL_SERVICE = 'VESSEL_SERVICE';
+export { VESSEL_SERVICE };
