@@ -10,7 +10,7 @@ async function bootstrap() {
       transport: Transport.KAFKA,
       options: {
         client: {
-          brokers: [process.env['BROKER_URL']],
+          brokers: [process.env['BROKER_URL'] as string],
         },
         consumer: {
           groupId: 'vessel-consumer',
