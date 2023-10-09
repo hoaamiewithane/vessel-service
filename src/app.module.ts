@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { ShipModule } from './ship/ship.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as process from 'process';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { Profile } from './ship/entities/profile.entity';
 import { Ship } from './ship/entities/ship.entity';
+import { User } from './ship/entities/user.entity';
+import { ShipModule } from './ship/ship.module';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { Ship } from './ship/entities/ship.entity';
       password: process.env['DB_PASSWORD'],
       database: process.env['DB_DATABASE'],
       synchronize: true,
-      entities: [Ship],
+      entities: [Ship, User, Profile],
     }),
   ],
   controllers: [AppController],

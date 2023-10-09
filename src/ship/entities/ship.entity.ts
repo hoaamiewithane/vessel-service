@@ -1,4 +1,12 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './user.entity';
 
 @Entity('ship')
 export class Ship extends BaseEntity {
@@ -8,4 +16,8 @@ export class Ship extends BaseEntity {
   name: string;
   @Column()
   maxWeight: number;
+
+  @ManyToMany(() => User)
+  @JoinTable()
+  users: User[];
 }
