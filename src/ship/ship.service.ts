@@ -5,7 +5,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientKafka, RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { lastValueFrom } from 'rxjs';
 import { USER_SERVICE } from 'src/constants';
@@ -73,15 +73,47 @@ export class ShipService implements OnModuleInit {
     searchTerm?: string;
   }) {
     const { limit, offset, searchTerm } = payload;
-    console.log({ payload });
-    return this.shipRepository.find({
-      where: {
-        ...(searchTerm && { name: Like(`%${searchTerm}%`) }),
+    return {
+      data: await this.shipRepository.find({
+        where: {
+          ...(searchTerm && { name: Like(`%${searchTerm}%`) }),
+        },
+        take: limit,
+        skip: offset,
+        relations: ['users'],
+      }),
+      count: await this.shipRepository.count({
+        where: {
+          ...(searchTerm && { name: Like(`%${searchTerm}%`) }),
+        },
+      }),
+    };
+  }
+
+  async updateShip(payload: any) {
+    const ship = await this.shipRepository.findOne({
+      where: { id: payload.id },
+      relations: {
+        users: true,
       },
-      take: limit,
-      skip: offset,
-      relations: ['users'],
     });
+    if (!ship) {
+      throw new RpcException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: `User with ID ${payload.id} not found.`,
+      });
+    }
+    const users: any = [];
+    for (const userId of payload.updateShipDto.users) {
+      const user = await lastValueFrom(
+        this.gateWayClient.send('find_one_user', userId),
+      );
+      users.push(user);
+    }
+    ship.users = users;
+    const updatedShip = await this.shipRepository.save(ship);
+
+    return { ...updatedShip };
   }
 
   async onModuleInit() {

@@ -41,4 +41,16 @@ export class ShipController {
       );
     }
   }
+
+  @MessagePattern('update_ship')
+  async updateShip(@Payload() data: any) {
+    try {
+      return this.shipService.updateShip(data);
+    } catch (err) {
+      throw new HttpException(
+        err.message || 'Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }
