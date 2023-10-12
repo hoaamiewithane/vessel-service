@@ -104,14 +104,16 @@ export class ShipService implements OnModuleInit {
       });
     }
     const users: any = [];
-    for (const userId of payload.updateShipDto.users) {
+    for (const userId of payload.users) {
       const user = await lastValueFrom(
         this.gateWayClient.send('find_one_user', userId),
       );
       users.push(user);
     }
-    ship.users = users;
-    const updatedShip = await this.shipRepository.save(ship);
+    const updatedShip = await this.shipRepository.save({
+      ...payload,
+      users,
+    });
 
     return { ...updatedShip };
   }
