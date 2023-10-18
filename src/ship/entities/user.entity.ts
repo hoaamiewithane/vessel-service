@@ -1,10 +1,12 @@
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Profile } from './profile.entity';
 
@@ -18,6 +20,10 @@ export class User extends BaseEntity {
   email: string;
   @Column({ nullable: true })
   password: string;
+  @CreateDateColumn({ nullable: true })
+  createAt: Date;
+  @UpdateDateColumn({ nullable: true })
+  updateAt: Date;
   @Column()
   role: string;
   @OneToOne(() => Profile)
